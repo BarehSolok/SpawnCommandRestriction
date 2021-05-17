@@ -32,7 +32,7 @@ namespace SpawnCommandRestriction
             MsgColor = UnturnedChat.GetColorFromName(Configuration.Instance.MessageColor, Color.green);
             
             Logger.LogWarning("[SpawnCommandRestriction] Plugin loaded successfully!");
-            Logger.LogWarning("[SpawnCommandRestriction] SpawnCommandRestriction v1.0.0");
+            Logger.LogWarning("[SpawnCommandRestriction] SpawnCommandRestriction v1.0.1");
             Logger.LogWarning("[SpawnCommandRestriction] Author: BarehSolok#2548");
             Logger.LogWarning("[SpawnCommandRestriction] Enjoy the plugin! ;)");
         }

@@ -8,9 +8,9 @@ namespace SpawnCommandRestriction.Models
         [XmlAttribute]
         public string ID;
         [XmlAttribute]
-        public ushort ItemCooldown;
+        public uint ItemCooldown;
         [XmlAttribute]
-        public ushort VehicleCooldown;
+        public uint VehicleCooldown;
         [XmlAttribute]
         public ushort ItemAmountLimit;
         [XmlArrayItem(ElementName = "Item")]

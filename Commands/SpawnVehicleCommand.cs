@@ -17,8 +17,8 @@ namespace SpawnCommandRestriction.Commands
         public string Name => "spawnvehicle";
         public string Help => "Gives yourself a vehicle";
         public string Syntax => "<id>";
-        public List<string> Aliases => new List<string>() { "sv" };
-        public List<string> Permissions => new List<string>() { "spawnvehicle" };
+        public List<string> Aliases => new List<string> { "sv" };
+        public List<string> Permissions => new List<string> { "spawnvehicle" };
 
         public void Execute(IRocketPlayer caller, string[] command)
         {

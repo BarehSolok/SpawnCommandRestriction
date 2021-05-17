@@ -91,7 +91,8 @@ namespace SpawnCommandRestriction.Commands
                 }
             }
 
-            if (player.GiveItem(id, amount))
+            var item = new Item(id, true);
+            if (GiveItem(player, item, amount, true))
             {
                 Logger.Log(Main.Inst.Translate("command_i_giving_console", player.DisplayName, id, amount));
                 UnturnedChat.Say(player, Main.Inst.Translate("command_i_giving_private", amount, assetName, id), Main.MsgColor);
@@ -101,6 +102,22 @@ namespace SpawnCommandRestriction.Commands
             {
                 UnturnedChat.Say(player, Main.Inst.Translate("command_i_giving_failed_private", amount, assetName, id), Main.MsgColor);
             }
+        }
+
+        private static bool GiveItem(UnturnedPlayer player, Item item, ushort amount, bool dropIfInventoryIsFull = false) {
+            var added = false;
+
+            for (var i = 0; i < amount; i++) {
+                var clone = new Item(item.id, item.amount, item.durability, item.metadata);
+
+                added = player.Inventory.tryAddItem(clone, true);
+
+                if (!added && dropIfInventoryIsFull) {
+                    ItemManager.dropItem(clone, player.Position, true, Dedicator.isDedicated, true);
+                }
+            }
+
+            return added;
         }
     }
 }
