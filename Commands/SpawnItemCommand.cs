@@ -6,9 +6,9 @@ using Rocket.Core.Logging;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
-using SpawnCommandRestriction.Models;
+using RFSpawnCommand.Models;
 
-namespace SpawnCommandRestriction.Commands
+namespace RFSpawnCommand.Commands
 {
     public class SpawnItemCommand : IRocketCommand
     {
@@ -22,7 +22,7 @@ namespace SpawnCommandRestriction.Commands
         {
             if (command.Length == 0 || command.Length > 2)
             {
-                UnturnedChat.Say(caller, Main.Inst.Translate("command_generic_invalid_parameter"), Main.MsgColor);
+                UnturnedChat.Say(caller, Plugin.Inst.Translate("command_generic_invalid_parameter"), Plugin.MsgColor);
                 throw new WrongUsageOfCommandException(caller, this);
             }
             
@@ -39,7 +39,7 @@ namespace SpawnCommandRestriction.Commands
                 if (asset != null) id = asset.id;
                 if (string.IsNullOrEmpty(itemString.Trim()) || id == 0)
                 {
-                    UnturnedChat.Say(player, Main.Inst.Translate("command_generic_invalid_parameter"), Main.MsgColor);
+                    UnturnedChat.Say(player, Plugin.Inst.Translate("command_generic_invalid_parameter"), Plugin.MsgColor);
                     throw new WrongUsageOfCommandException(caller, this);
                 }
             }
@@ -48,37 +48,37 @@ namespace SpawnCommandRestriction.Commands
 
             if (command.Length == 2 && !byte.TryParse(command[1], out amount) || a == null)
             {
-                UnturnedChat.Say(player, Main.Inst.Translate("command_generic_invalid_parameter"), Main.MsgColor);
+                UnturnedChat.Say(player, Plugin.Inst.Translate("command_generic_invalid_parameter"), Plugin.MsgColor);
                 throw new WrongUsageOfCommandException(caller, this);
             }
 
             var assetName = ((ItemAsset)a).itemName;
 
-            if (!player.HasPermission(Main.Inst.Configuration.Instance.ItemLimitBypassPermission))
+            if (!player.HasPermission(Plugin.Inst.Configuration.Instance.ItemLimitBypassPermission))
             {
-                var limit = Main.Inst.Configuration.Instance.Restrictions[0].ItemAmountLimit;
-                foreach (var g in Main.Inst.Configuration.Instance.Restrictions.Where(g => Main.Conf.UseGroupInsteadOfPermission ? Main.PlayerHasGroup(caller, g) : Main.PlayerHasPermission(caller, g)).Where(g => g.ItemAmountLimit > limit))
+                var limit = Plugin.Inst.Configuration.Instance.Restrictions[0].ItemAmountLimit;
+                foreach (var g in Plugin.Inst.Configuration.Instance.Restrictions.Where(g => Plugin.Conf.UseGroupInsteadOfPermission ? Plugin.PlayerHasGroup(caller, g) : Plugin.PlayerHasPermission(caller, g)).Where(g => g.ItemAmountLimit > limit))
                 {
                     limit = g.ItemAmountLimit;
                 }
                 if (amount > limit)
                 {
-                    UnturnedChat.Say(player, Main.Inst.Translate("command_i_too_much", limit), Main.MsgColor);
+                    UnturnedChat.Say(player, Plugin.Inst.Translate("command_i_too_much", limit), Plugin.MsgColor);
                     return;
                 }
             }
 
-            if (Main.Inst.Configuration.Instance.Restrictions.Any(g => Main.Conf.UseGroupInsteadOfPermission ? Main.PlayerHasGroup(caller, g) : Main.PlayerHasPermission(caller, g)
-                                                                    && g.BlackListItems.Any(i => i.ID == id)) && !player.HasPermission(Main.Inst.Configuration.Instance.ItemBlacklistBypassPermission))
+            if (Plugin.Inst.Configuration.Instance.Restrictions.Any(g => Plugin.Conf.UseGroupInsteadOfPermission ? Plugin.PlayerHasGroup(caller, g) : Plugin.PlayerHasPermission(caller, g)
+                                                                    && g.BlackListItems.Any(i => i.ID == id)) && !player.HasPermission(Plugin.Inst.Configuration.Instance.ItemBlacklistBypassPermission))
             {
-                UnturnedChat.Say(player, Main.Inst.Translate("command_i_blacklisted"), Main.MsgColor);
+                UnturnedChat.Say(player, Plugin.Inst.Translate("command_i_blacklisted"), Plugin.MsgColor);
                 return;
             }
 
-            if (!player.HasPermission(Main.Conf.ItemCooldownBypassPermission) && Main.ItemCooldowns.TryGetValue(((UnturnedPlayer)caller).CSteamID, out var lastUse))
+            if (!player.HasPermission(Plugin.Conf.ItemCooldownBypassPermission) && Plugin.ItemCooldowns.TryGetValue(((UnturnedPlayer)caller).CSteamID, out var lastUse))
             {
-                var cooldown = Main.Conf.Restrictions[0].ItemCooldown;
-                foreach (var g in Main.Conf.Restrictions.Where(g => Main.Conf.UseGroupInsteadOfPermission ? Main.PlayerHasGroup(caller, g) : Main.PlayerHasPermission(caller, g)).Where(g => g.ItemCooldown < cooldown))
+                var cooldown = Plugin.Conf.Restrictions[0].ItemCooldown;
+                foreach (var g in Plugin.Conf.Restrictions.Where(g => Plugin.Conf.UseGroupInsteadOfPermission ? Plugin.PlayerHasGroup(caller, g) : Plugin.PlayerHasPermission(caller, g)).Where(g => g.ItemCooldown < cooldown))
                 {
                     cooldown = g.ItemCooldown;
                 }
@@ -86,7 +86,7 @@ namespace SpawnCommandRestriction.Commands
                 var timeLeft = Math.Round(cooldown - secondsElapsed);
                 if (secondsElapsed < cooldown)
                 {
-                    UnturnedChat.Say(caller, Main.Inst.Translate("command_cooldown", timeLeft), Main.MsgColor);
+                    UnturnedChat.Say(caller, Plugin.Inst.Translate("command_cooldown", timeLeft), Plugin.MsgColor);
                     return;
                 }
             }
@@ -94,13 +94,13 @@ namespace SpawnCommandRestriction.Commands
             var item = new Item(id, true);
             if (GiveItem(player, item, amount, true))
             {
-                Logger.Log(Main.Inst.Translate("command_i_giving_console", player.DisplayName, id, amount));
-                UnturnedChat.Say(player, Main.Inst.Translate("command_i_giving_private", amount, assetName, id), Main.MsgColor);
-                Main.ItemCooldowns[((UnturnedPlayer)caller).CSteamID] = DateTime.Now;
+                Logger.Log(Plugin.Inst.Translate("command_i_giving_console", player.DisplayName, id, amount));
+                UnturnedChat.Say(player, Plugin.Inst.Translate("command_i_giving_private", amount, assetName, id), Plugin.MsgColor);
+                Plugin.ItemCooldowns[((UnturnedPlayer)caller).CSteamID] = DateTime.Now;
             }
             else
             {
-                UnturnedChat.Say(player, Main.Inst.Translate("command_i_giving_failed_private", amount, assetName, id), Main.MsgColor);
+                UnturnedChat.Say(player, Plugin.Inst.Translate("command_i_giving_failed_private", amount, assetName, id), Plugin.MsgColor);
             }
         }
 

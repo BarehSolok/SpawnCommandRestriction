@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using RFSpawnCommand.Models;
 using Rocket.API;
 using Rocket.API.Collections;
 using Rocket.Core;
 using Rocket.Core.Plugins;
 using Rocket.Unturned.Chat;
-using SpawnCommandRestriction.Models;
 using Steamworks;
 using UnityEngine;
 using Logger = Rocket.Core.Logging.Logger;
 
-namespace SpawnCommandRestriction
+namespace RFSpawnCommand
 {
-    public class Main : RocketPlugin<Configuration>
+    public class Plugin : RocketPlugin<Configuration>
     {
-        public static Main Inst;
+        public static Plugin Inst;
         public static Configuration Conf;
 
         public static Dictionary<CSteamID, DateTime> ItemCooldowns;
@@ -31,10 +31,9 @@ namespace SpawnCommandRestriction
             VehicleCooldowns = new Dictionary<CSteamID, DateTime>();
             MsgColor = UnturnedChat.GetColorFromName(Configuration.Instance.MessageColor, Color.green);
             
-            Logger.LogWarning("[SpawnCommandRestriction] Plugin loaded successfully!");
-            Logger.LogWarning("[SpawnCommandRestriction] SpawnCommandRestriction v1.0.1");
-            Logger.LogWarning("[SpawnCommandRestriction] Author: BarehSolok#2548");
-            Logger.LogWarning("[SpawnCommandRestriction] Enjoy the plugin! ;)");
+            Logger.LogWarning("[RFSpawnCommand] Plugin loaded successfully!");
+            Logger.LogWarning("[RFSpawnCommand] RFSpawnCommand v1.0.2");
+            Logger.LogWarning("[RFSpawnCommand] Made with 'rice' by RiceField Plugins!");
         }
         protected override void Unload()
         {
@@ -42,9 +41,8 @@ namespace SpawnCommandRestriction
             Conf = null;
 
             ItemCooldowns = null;
-            VehicleCooldowns = null;
-            
-            Logger.LogWarning("[SpawnCommandRestriction] Plugin unload successfully!");
+            VehicleCooldowns = null;      
+            Logger.LogWarning("[RFSpawnCommand] Plugin unload successfully!");
         }
         public override TranslationList DefaultTranslations => new TranslationList()
         {
@@ -63,21 +61,21 @@ namespace SpawnCommandRestriction
             { "command_no_permission", "You don't have permission to do this command!" },
         };
 
-        public static bool PlayerHasGroup(IRocketPlayer caller, Restriction restriction)
+        public static bool PlayerHasGroup(IRocketPlayer caller, RestrictionModel restrictionModel)
         {
             var groups = R.Permissions.GetGroups(caller, true).Select(g => g.Id).ToArray();
             for (ushort i = 0; i < groups.Length; i++)
             {
-                if (string.Equals(restriction.ID, groups[i], StringComparison.CurrentCultureIgnoreCase))
+                if (string.Equals(restrictionModel.ID, groups[i], StringComparison.CurrentCultureIgnoreCase))
                     return true;
             }
 
             return false;
         }
-        public static bool PlayerHasPermission(IRocketPlayer caller, Restriction restriction)
+        public static bool PlayerHasPermission(IRocketPlayer caller, RestrictionModel restrictionModel)
         {
             return caller.GetPermissions().Any(p =>
-                string.Equals(p.Name, restriction.ID, StringComparison.CurrentCultureIgnoreCase));
+                string.Equals(p.Name, restrictionModel.ID, StringComparison.CurrentCultureIgnoreCase));
         }
     }
 }

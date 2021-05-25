@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace SpawnCommandRestriction.Models
+namespace RFSpawnCommand.Models
 {
-    public class Restriction
+    public class RestrictionModel
     {
         [XmlAttribute]
         public string ID;
@@ -14,10 +14,10 @@ namespace SpawnCommandRestriction.Models
         [XmlAttribute]
         public ushort ItemAmountLimit;
         [XmlArrayItem(ElementName = "Item")]
-        public List<AssetID> BlackListItems;
+        public List<AssetModel> BlackListItems;
         [XmlArrayItem(ElementName = "Vehicle")]
-        public List<AssetID> BlackListVehicles;
-        public Restriction()
+        public List<AssetModel> BlackListVehicles;
+        public RestrictionModel()
         {
 
         }

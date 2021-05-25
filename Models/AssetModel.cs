@@ -1,16 +1,16 @@
 ﻿using System.Xml.Serialization;
 
-namespace SpawnCommandRestriction.Models
+namespace RFSpawnCommand.Models
 {
-    public class AssetID
+    public class AssetModel
     {
         [XmlAttribute]
         public ushort ID;
 
-        public AssetID()
+        public AssetModel()
         {
         }
-        public AssetID(ushort id)
+        public AssetModel(ushort id)
         {
             ID = id;
         }

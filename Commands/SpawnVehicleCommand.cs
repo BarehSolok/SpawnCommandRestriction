@@ -7,9 +7,9 @@ using Rocket.Unturned;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
-using SpawnCommandRestriction.Models;
+using RFSpawnCommand.Models;
 
-namespace SpawnCommandRestriction.Commands
+namespace RFSpawnCommand.Commands
 {
     public class SpawnVehicleCommand : IRocketCommand
     {
@@ -24,7 +24,7 @@ namespace SpawnCommandRestriction.Commands
         {
             if (command.Length != 1)
             {
-                UnturnedChat.Say(caller, Main.Inst.Translate("command_generic_v_invalid_parameter"), Main.MsgColor);
+                UnturnedChat.Say(caller, Plugin.Inst.Translate("command_generic_v_invalid_parameter"), Plugin.MsgColor);
                 return;
             }
             
@@ -40,7 +40,7 @@ namespace SpawnCommandRestriction.Commands
 
                 if (vAsset == null)
                 {
-                    UnturnedChat.Say(player, Main.Inst.Translate("command_generic_v_invalid_parameter"), Main.MsgColor);
+                    UnturnedChat.Say(player, Plugin.Inst.Translate("command_generic_v_invalid_parameter"), Plugin.MsgColor);
                     return;
                 }
 
@@ -50,7 +50,7 @@ namespace SpawnCommandRestriction.Commands
 
             if (Assets.find(EAssetType.VEHICLE, id) == null)
             {
-                UnturnedChat.Say(player, Main.Inst.Translate("command_generic_v_invalid_parameter"), Main.MsgColor);
+                UnturnedChat.Say(player, Plugin.Inst.Translate("command_generic_v_invalid_parameter"), Plugin.MsgColor);
                 return;
             }
 
@@ -59,19 +59,19 @@ namespace SpawnCommandRestriction.Commands
                 vehicleName = ((VehicleAsset)Assets.find(EAssetType.VEHICLE, id)).vehicleName;
             }
 
-            if (Main.Conf.Restrictions.Any(g => Main.Conf.UseGroupInsteadOfPermission ? Main.PlayerHasGroup(caller, g) : Main.PlayerHasPermission(caller, g) && 
+            if (Plugin.Conf.Restrictions.Any(g => Plugin.Conf.UseGroupInsteadOfPermission ? Plugin.PlayerHasGroup(caller, g) : Plugin.PlayerHasPermission(caller, g) && 
                                                 g.BlackListVehicles.Any(i => i.ID == id)) && 
-                !player.HasPermission(Main.Conf.VehicleBlacklistBypassPermission))
+                !player.HasPermission(Plugin.Conf.VehicleBlacklistBypassPermission))
             {
-                UnturnedChat.Say(player, Main.Inst.Translate("command_v_blacklisted"), Main.MsgColor);
+                UnturnedChat.Say(player, Plugin.Inst.Translate("command_v_blacklisted"), Plugin.MsgColor);
                 return;
             }
 
-            if (!player.HasPermission(Main.Conf.VehicleCooldownBypassPermission) && 
-                Main.VehicleCooldowns.TryGetValue(((UnturnedPlayer)caller).CSteamID, out var lastUse))
+            if (!player.HasPermission(Plugin.Conf.VehicleCooldownBypassPermission) && 
+                Plugin.VehicleCooldowns.TryGetValue(((UnturnedPlayer)caller).CSteamID, out var lastUse))
             {
-                var cooldown = Main.Conf.Restrictions[0].VehicleCooldown;
-                foreach (var g in Main.Conf.Restrictions.Where(g => Main.Conf.UseGroupInsteadOfPermission ? Main.PlayerHasGroup(caller, g) : Main.PlayerHasPermission(caller, g)).Where(g => g.ItemCooldown < cooldown))
+                var cooldown = Plugin.Conf.Restrictions[0].VehicleCooldown;
+                foreach (var g in Plugin.Conf.Restrictions.Where(g => Plugin.Conf.UseGroupInsteadOfPermission ? Plugin.PlayerHasGroup(caller, g) : Plugin.PlayerHasPermission(caller, g)).Where(g => g.ItemCooldown < cooldown))
                 {
                     cooldown = g.VehicleCooldown;
                 }
@@ -79,7 +79,7 @@ namespace SpawnCommandRestriction.Commands
                 var timeLeft = Math.Round(cooldown - secondsElapsed);
                 if (secondsElapsed < cooldown)
                 {
-                    UnturnedChat.Say(caller, Main.Inst.Translate("command_cooldown", timeLeft), Main.MsgColor);
+                    UnturnedChat.Say(caller, Plugin.Inst.Translate("command_cooldown", timeLeft), Plugin.MsgColor);
                     return;
                 }
             }
@@ -88,13 +88,13 @@ namespace SpawnCommandRestriction.Commands
             {
                 Logger.Log(U.Translate("command_v_giving_console", player.CharacterName, 
                     id.ToString()));
-                UnturnedChat.Say(caller, Main.Inst.Translate("command_v_giving_private",
-                    vehicleName, id.ToString()), Main.MsgColor);
-                Main.VehicleCooldowns[((UnturnedPlayer)caller).CSteamID] = DateTime.Now;
+                UnturnedChat.Say(caller, Plugin.Inst.Translate("command_v_giving_private",
+                    vehicleName, id.ToString()), Plugin.MsgColor);
+                Plugin.VehicleCooldowns[((UnturnedPlayer)caller).CSteamID] = DateTime.Now;
             }
             else
-                UnturnedChat.Say(caller, Main.Inst.Translate("command_v_giving_failed_private", 
-                    vehicleName, id.ToString()), Main.MsgColor);
+                UnturnedChat.Say(caller, Plugin.Inst.Translate("command_v_giving_failed_private", 
+                    vehicleName, id.ToString()), Plugin.MsgColor);
         }
     }
 }

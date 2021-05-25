@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Xml.Serialization;
+using RFSpawnCommand.Models;
 using Rocket.API;
-using SpawnCommandRestriction.Models;
 
-namespace SpawnCommandRestriction
+namespace RFSpawnCommand
 {
     public class Configuration : IRocketPluginConfiguration
     {
@@ -13,7 +14,8 @@ namespace SpawnCommandRestriction
         public string VehicleBlacklistBypassPermission;
         public string MessageColor;
         public bool UseGroupInsteadOfPermission;
-        public List<Restriction> Restrictions;
+        [XmlArrayItem("Restriction")]
+        public List<RestrictionModel> Restrictions;
         public void LoadDefaults()
         {
             ItemCooldownBypassPermission = "itemcooldown.bypass";
@@ -23,25 +25,25 @@ namespace SpawnCommandRestriction
             VehicleBlacklistBypassPermission = "vehicleblacklist.bypass";
             MessageColor = "white";
             UseGroupInsteadOfPermission = false;
-            Restrictions = new List<Restriction>
+            Restrictions = new List<RestrictionModel>
             {
-                new Restriction()
+                new RestrictionModel()
                 {
                     ID = "default",
                     ItemCooldown = 300,
                     ItemAmountLimit = 1,
-                    BlackListItems = new List<AssetID> { new AssetID(1394), new AssetID(519), new AssetID(1241) },
+                    BlackListItems = new List<AssetModel> { new AssetModel(1394), new AssetModel(519), new AssetModel(1241) },
                     VehicleCooldown = 300,
-                    BlackListVehicles = new List<AssetID> { new AssetID(1394), new AssetID(519), new AssetID(1241), },
+                    BlackListVehicles = new List<AssetModel> { new AssetModel(1394), new AssetModel(519), new AssetModel(1241), },
                 },
-                new Restriction()
+                new RestrictionModel()
                 {
                     ID = "vip",
                     ItemCooldown = 0,
                     ItemAmountLimit = 10,
-                    BlackListItems = new List<AssetID> { new AssetID(1394), new AssetID(519), new AssetID(1241) },
+                    BlackListItems = new List<AssetModel> { new AssetModel(1394), new AssetModel(519), new AssetModel(1241) },
                     VehicleCooldown = 0,
-                    BlackListVehicles = new List<AssetID> { new AssetID(1394), new AssetID(519), new AssetID(1241), },
+                    BlackListVehicles = new List<AssetModel> { new AssetModel(1394), new AssetModel(519), new AssetModel(1241), },
                 }
             };
         }

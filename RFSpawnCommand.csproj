@@ -7,8 +7,8 @@
     <ProjectGuid>{8FDF6E82-E5FB-48BC-9CEF-A3866BF97AA6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SpawnCommandRestriction</RootNamespace>
-    <AssemblyName>SpawnCommandRestriction</AssemblyName>
+    <RootNamespace>RFSpawnCommand</RootNamespace>
+    <AssemblyName>RFSpawnCommand</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -61,11 +61,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\SpawnVehicleCommand.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="Plugin.cs" />
     <Compile Include="Commands\SpawnItemCommand.cs" />
     <Compile Include="Configuration.cs" />
-    <Compile Include="Models\AssetID.cs" />
-    <Compile Include="Models\Restriction.cs" />
+    <Compile Include="Models\AssetModel.cs" />
+    <Compile Include="Models\RestrictionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
