@@ -15,7 +15,7 @@ namespace RFSpawnCommand
         public string MessageColor;
         public bool UseGroupInsteadOfPermission;
         [XmlArrayItem("Restriction")]
-        public List<RestrictionModel> Restrictions;
+        public List<Restriction> Restrictions;
         public void LoadDefaults()
         {
             ItemCooldownBypassPermission = "itemcooldown.bypass";
@@ -25,9 +25,9 @@ namespace RFSpawnCommand
             VehicleBlacklistBypassPermission = "vehicleblacklist.bypass";
             MessageColor = "white";
             UseGroupInsteadOfPermission = false;
-            Restrictions = new List<RestrictionModel>
+            Restrictions = new List<Restriction>
             {
-                new RestrictionModel()
+                new Restriction()
                 {
                     ID = "default",
                     ItemCooldown = 300,
@@ -36,7 +36,7 @@ namespace RFSpawnCommand
                     VehicleCooldown = 300,
                     BlackListVehicles = new List<AssetModel> { new AssetModel(1394), new AssetModel(519), new AssetModel(1241), },
                 },
-                new RestrictionModel()
+                new Restriction()
                 {
                     ID = "vip",
                     ItemCooldown = 0,

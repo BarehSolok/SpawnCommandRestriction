@@ -6,7 +6,6 @@ using Rocket.Core.Logging;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
-using RFSpawnCommand.Models;
 
 namespace RFSpawnCommand.Commands
 {
@@ -75,14 +74,15 @@ namespace RFSpawnCommand.Commands
                 return;
             }
 
-            if (!player.HasPermission(Plugin.Conf.ItemCooldownBypassPermission) && Plugin.ItemCooldowns.TryGetValue(((UnturnedPlayer)caller).CSteamID, out var lastUse))
+            var playerCooldown = Plugin.Inst.Database.GetInternal(player.CSteamID.m_SteamID);
+            if (!player.HasPermission(Plugin.Conf.ItemCooldownBypassPermission) && playerCooldown.LastItemCommand.HasValue)
             {
                 var cooldown = Plugin.Conf.Restrictions[0].ItemCooldown;
                 foreach (var g in Plugin.Conf.Restrictions.Where(g => Plugin.Conf.UseGroupInsteadOfPermission ? Plugin.PlayerHasGroup(caller, g) : Plugin.PlayerHasPermission(caller, g)).Where(g => g.ItemCooldown < cooldown))
                 {
                     cooldown = g.ItemCooldown;
                 }
-                var secondsElapsed = (DateTime.Now - lastUse).TotalSeconds;
+                var secondsElapsed = (DateTime.Now - playerCooldown.LastItemCommand.Value).TotalSeconds;
                 var timeLeft = Math.Round(cooldown - secondsElapsed);
                 if (secondsElapsed < cooldown)
                 {
@@ -96,7 +96,8 @@ namespace RFSpawnCommand.Commands
             {
                 Logger.Log(Plugin.Inst.Translate("command_i_giving_console", player.DisplayName, id, amount));
                 UnturnedChat.Say(player, Plugin.Inst.Translate("command_i_giving_private", amount, assetName, id), Plugin.MsgColor);
-                Plugin.ItemCooldowns[((UnturnedPlayer)caller).CSteamID] = DateTime.Now;
+                playerCooldown.LastItemCommand = DateTime.Now;
+                Plugin.Inst.Database.Update(player.CSteamID.m_SteamID);
             }
             else
             {

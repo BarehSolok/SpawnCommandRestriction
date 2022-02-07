@@ -7,7 +7,6 @@ using Rocket.Unturned;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
-using RFSpawnCommand.Models;
 
 namespace RFSpawnCommand.Commands
 {
@@ -67,15 +66,15 @@ namespace RFSpawnCommand.Commands
                 return;
             }
 
-            if (!player.HasPermission(Plugin.Conf.VehicleCooldownBypassPermission) && 
-                Plugin.VehicleCooldowns.TryGetValue(((UnturnedPlayer)caller).CSteamID, out var lastUse))
+            var playerCooldown = Plugin.Inst.Database.GetInternal(player.CSteamID.m_SteamID);
+            if (!player.HasPermission(Plugin.Conf.VehicleCooldownBypassPermission) && playerCooldown.LastVehicleCommand.HasValue)
             {
                 var cooldown = Plugin.Conf.Restrictions[0].VehicleCooldown;
                 foreach (var g in Plugin.Conf.Restrictions.Where(g => Plugin.Conf.UseGroupInsteadOfPermission ? Plugin.PlayerHasGroup(caller, g) : Plugin.PlayerHasPermission(caller, g)).Where(g => g.ItemCooldown < cooldown))
                 {
                     cooldown = g.VehicleCooldown;
                 }
-                var secondsElapsed = (DateTime.Now - lastUse).TotalSeconds;
+                var secondsElapsed = (DateTime.Now - playerCooldown.LastVehicleCommand.Value).TotalSeconds;
                 var timeLeft = Math.Round(cooldown - secondsElapsed);
                 if (secondsElapsed < cooldown)
                 {
@@ -90,7 +89,8 @@ namespace RFSpawnCommand.Commands
                     id.ToString()));
                 UnturnedChat.Say(caller, Plugin.Inst.Translate("command_v_giving_private",
                     vehicleName, id.ToString()), Plugin.MsgColor);
-                Plugin.VehicleCooldowns[((UnturnedPlayer)caller).CSteamID] = DateTime.Now;
+                playerCooldown.LastVehicleCommand = DateTime.Now;
+                Plugin.Inst.Database.Update(player.CSteamID.m_SteamID);
             }
             else
                 UnturnedChat.Say(caller, Plugin.Inst.Translate("command_v_giving_failed_private", 

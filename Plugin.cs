@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using RFSpawnCommand.DatabaseManagers;
 using RFSpawnCommand.Models;
 using Rocket.API;
 using Rocket.API.Collections;
 using Rocket.Core;
 using Rocket.Core.Plugins;
 using Rocket.Unturned.Chat;
-using Steamworks;
 using UnityEngine;
 using Logger = Rocket.Core.Logging.Logger;
 
@@ -17,19 +16,15 @@ namespace RFSpawnCommand
     {
         public static Plugin Inst;
         public static Configuration Conf;
-
-        public static Dictionary<CSteamID, DateTime> ItemCooldowns;
-        public static Dictionary<CSteamID, DateTime> VehicleCooldowns;
         public static Color MsgColor;
+        internal CooldownManager Database;
         
         protected override void Load()
         {
             Inst = this;
             Conf = Configuration.Instance;
-
-            ItemCooldowns = new Dictionary<CSteamID, DateTime>();
-            VehicleCooldowns = new Dictionary<CSteamID, DateTime>();
             MsgColor = UnturnedChat.GetColorFromName(Configuration.Instance.MessageColor, Color.green);
+            Database = new CooldownManager();
             
             Logger.LogWarning("[RFSpawnCommand] Plugin loaded successfully!");
             Logger.LogWarning("[RFSpawnCommand] RFSpawnCommand v1.0.2");
@@ -38,10 +33,7 @@ namespace RFSpawnCommand
         protected override void Unload()
         {
             Inst = null;
-            Conf = null;
-
-            ItemCooldowns = null;
-            VehicleCooldowns = null;      
+            Conf = null; 
             Logger.LogWarning("[RFSpawnCommand] Plugin unload successfully!");
         }
         public override TranslationList DefaultTranslations => new TranslationList()
@@ -61,21 +53,21 @@ namespace RFSpawnCommand
             { "command_no_permission", "You don't have permission to do this command!" },
         };
 
-        public static bool PlayerHasGroup(IRocketPlayer caller, RestrictionModel restrictionModel)
+        public static bool PlayerHasGroup(IRocketPlayer caller, Restriction restriction)
         {
             var groups = R.Permissions.GetGroups(caller, true).Select(g => g.Id).ToArray();
             for (ushort i = 0; i < groups.Length; i++)
             {
-                if (string.Equals(restrictionModel.ID, groups[i], StringComparison.CurrentCultureIgnoreCase))
+                if (string.Equals(restriction.ID, groups[i], StringComparison.CurrentCultureIgnoreCase))
                     return true;
             }
 
             return false;
         }
-        public static bool PlayerHasPermission(IRocketPlayer caller, RestrictionModel restrictionModel)
+        public static bool PlayerHasPermission(IRocketPlayer caller, Restriction restriction)
         {
             return caller.GetPermissions().Any(p =>
-                string.Equals(p.Name, restrictionModel.ID, StringComparison.CurrentCultureIgnoreCase));
+                string.Equals(p.Name, restriction.ID, StringComparison.CurrentCultureIgnoreCase));
         }
     }
 }

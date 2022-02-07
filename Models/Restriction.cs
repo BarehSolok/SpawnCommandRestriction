@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 
 namespace RFSpawnCommand.Models
 {
-    public class RestrictionModel
+    public class Restriction
     {
         [XmlAttribute]
         public string ID;
@@ -17,7 +17,7 @@ namespace RFSpawnCommand.Models
         public List<AssetModel> BlackListItems;
         [XmlArrayItem(ElementName = "Vehicle")]
         public List<AssetModel> BlackListVehicles;
-        public RestrictionModel()
+        public Restriction()
         {
 
         }

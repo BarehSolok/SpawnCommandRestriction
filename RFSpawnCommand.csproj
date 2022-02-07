@@ -34,6 +34,9 @@
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\Libraries\RocketMod Development\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\..\..\Libraries\RocketMod\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Rocket.API, Version=4.9.3.4, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\Libraries\RocketMod Development\Rocket.API.dll</HintPath>
     </Reference>
@@ -61,11 +64,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\SpawnVehicleCommand.cs" />
+    <Compile Include="DatabaseManagers\CooldownManager.cs" />
+    <Compile Include="DatabaseManagers\DataStore.cs" />
+    <Compile Include="Models\Cooldown.cs" />
+    <Compile Include="PlayerComponent.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Commands\SpawnItemCommand.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Models\AssetModel.cs" />
-    <Compile Include="Models\RestrictionModel.cs" />
+    <Compile Include="Models\Restriction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
